@@ -1,0 +1,275 @@
+﻿<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Streamgraph</title>
+<script type="text/javascript" charset="utf-8" src="http://code.jquery.com/jquery-1.8.3.min.js"></script>
+
+<style>
+
+body {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  margin: 0;
+}
+
+button {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+}
+svg{
+  margin-top: 100px;
+  margin-left:20px;
+  padding-left: 20px;
+  padding-bottom: 20px;
+  padding-top: 20px;
+}
+
+.axis path,
+.axis line{
+    fill: none;
+    stroke: black;
+    shape-rendering: crispEdges;
+	line-weight:2px;
+}
+
+.axis text {
+    font-family: sans-serif;
+    font-size: 11px;
+}
+
+.tooltip{  
+    position: absolute;  
+    width: 120px;  
+    height: auto;  
+    font-family: simsun;  
+    font-size: 14px;  
+    text-align: center;  
+    color: white;  
+    border-width: 2px solid black;  
+    background-color: black;  
+    border-radius: 5px;  
+}  
+  
+.tooltip:after{   
+    content: '';  
+    position: absolute;  
+    bottom: 100%;  
+    left: 20%;  
+    margin-left: -8px;  
+    width: 0;  
+    height: 0;  
+    border-bottom: 12px solid black;  
+    border-right: 12px solid transparent;  
+    border-left: 12px solid transparent;  
+}
+.axis path, .axis line{
+  fill: black;
+}
+</style>
+<script src="js/d3.min.js"></script>
+<body>
+  <div id="layerTitle"></div>
+</body>
+<script>
+
+
+var parseDate = d3.time.format("%m/%d/%Y").parse;
+var tooltip=d3.select("body")  
+                .append("div")  
+                .attr("class","tooltip")  
+                .style("opacity",0.0);  
+				
+d3.csv("test.csv", function(error, data) {
+        data.forEach(function(d) {
+            d.x = parseDate(d.date);
+            d.y = parseInt(d.num_visitors) + 1;
+			d.name=d.venue;
+            d.index = parseInt(d.index);
+
+        });
+        window.data = data;
+        draw();
+
+});
+
+function draw(){
+
+    var nest = d3.nest()
+           .key(function(d){ return d.venue});
+    var n = window.data.length, // number of layers, online, museum
+
+	
+    stack = d3.layout.stack().offset("wiggle")
+          .values(function(d) { return d.values; });
+
+    var width = 900,
+        height = 400;
+	var svg = d3.select("body").append("svg")
+	.attr("width", width+300)
+	.attr("height", height);
+
+	var pieG = svg.append('g')
+        .attr('id','pieG');
+
+    //group data by venue
+    layers0 = stack(nest.entries(data));
+
+    var m = layers0[0].values.length; // number of samples per layer
+
+    var allValues = layers0[0].values.concat(layers0[1].values);
+	
+    var yDomain = d3.max(allValues, function(d) { 
+      return d.y0 + d.y; 
+    });
+
+    let timeExtent = d3.extent(data, function(d){
+        return d.x;
+    });
+
+
+	var x = d3.time.scale().range([0, width-50]);
+	 x.domain(timeExtent);
+		
+	//var x = d3.scale.linear()
+    //  .domain([0, m - 1])
+    //  .range([0, width]);
+
+	var axisX = d3.svg.axis()
+     .scale(x)     
+     .orient("bottom")   
+     .ticks(layers0[0].length)
+        .tickSize(4,-3);
+	 
+    var y = d3.scale.linear()
+    .domain([1, 4*yDomain/3])
+    .range([height, 0]);
+	
+	var axisY = d3.svg.axis()
+     .scale(y)      
+     .orient("left")   
+     .ticks(20)
+        .tickSize(4,-3);
+	 
+    var color = d3.scale.linear()
+        .range(["#053749", "#6bb9d6"]);
+
+    var area = d3.svg.area()
+      .x(
+        function(d) { 
+          return x(d.x); 
+        })
+        .y0(function(d) {          
+          return y(d.y0); 
+        })
+        .y1(function(d) { 
+          return y(d.y0 + d.y); 
+        })
+        .interpolate("cardinal")
+        .tension(0.6); 
+
+
+    svg.append('g')
+        .attr("transform","translate(0,0)")
+        .selectAll("path")
+        .data(layers0)
+		.enter().append("path")
+		.attr("transform","translate(30,0)")
+        .attr("d", function(d) { return area(d.values); })
+        .attr("id", function(d) { 
+          return d.key;
+        })
+        .attr("title", function(d) { 
+          return "visitors from " + d.key;
+        })
+		.text(function(d) { return d.name; })
+		.on("mouseover", findValue)
+        .style("fill", function(d,i) { return color(i); });
+		
+	 svg.append("g")
+	  .attr("class","axis")
+	  .attr("transform","translate(30,"+height+")")
+	  .call(axisX);
+	  
+	svg.append("g")
+	  .attr("class","axis")
+	  .attr("transform","translate(30,0)")
+	  .call(axisY);
+
+    let pie = d3.layout.pie()
+        .value(function (d) {
+            return d['v'];
+        });
+
+    let arc2 = d3.svg.arc()
+        .innerRadius(0)
+        .outerRadius(100);
+  function findValue(d, i) {
+
+      var mouseX = d3.mouse(this.parentNode)[0];
+      var mouseY = d3.mouse(this.parentNode)[1];
+      var dataY = d3.round(y.invert(mouseY));
+      var dataX =  x.invert(mouseX);
+
+      var date = dataX.getFullYear();
+
+      //let v1 = null;
+      let arcD=[];
+      let mX = dataX.getMonth();
+      let dX = dataX.getDate();
+      for(let m of layers0){
+          for(let j of m.values){//layers0[i===1? i : i+1]
+              let mJ = parseDate(j['date']).getMonth();
+              let dJ = parseDate(j['date']).getDate();
+              if(mX == mJ && dX==dJ){
+                  let v1 = +j['num_visitors'];
+                  arcD.push({t:m['key'], v:v1});
+                  break;
+              }
+          }
+      }
+
+      if(arcD.length !==0){
+          //var arcD = [{t:d.key,v:dataY},{t:layers0[i===1? i : i+1].key,v:v1}];
+          //绘制辅助图
+          let _auxD = pie(arcD);
+          pieG.remove();
+          pieG = svg.append('g')
+              .attr('id','pieG');
+          let update = pieG.selectAll('.aux').data(_auxD)
+              .enter()
+              .append('g');
+          update.append("path")
+              .attr('class','aux')
+              .attr('d',function (d) {
+                  return arc2(d);
+              })
+              .attr('transform','translate(1100,200)')
+              .style('fill',function(d,i) { return color(i);})
+              .transition()
+              .duration(1000)
+              //.attr('d',arc2)
+              .style('opacity',1);
+
+          update.append("text")
+              .attr("transform", function(d) {
+                  let coor = arc2.centroid(d);
+
+                  return "translate(" + (coor[0]+1100) + ","+(coor[1] + 200)+")";
+              })
+              .attr("dy", ".35em")
+              .style('fill','red')
+              .attr("text-anchor", "middle")
+              .text(function(d,i) {
+                  return d.data.t;
+              });
+      }
+
+
+      tooltip.html("venue:"+d.key+"<br> date :"+date+"<br> num visitors :"+dataY+"")
+          .style("left",(d3.event.pageX)+"px")
+          .style("top",(d3.event.pageY+20)+"px")
+          .style("opacity",1.0);
+      tooltip.style("box-shadow","10px 0px 0px"+color(i));//在提示框后添加阴影
+  }
+}
+</script>
+</html>
