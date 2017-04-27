@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="js/charts.min.js"></script>
+    <script src="js/wordcloud.min.js"></script>
+<link href="css/style.css" rel="stylesheet"></head>
+<body id="body">
+<div id = 'wrap'>
+    <div style="width: 100%; text-align: center; color: #FFF;font-size: 100px;">Dig Into A NBA Player</div>
+    <div style="position: relative">
+        <div style="width: 100%; text-align: center; color: #FFF;font-size: 100px; position: relative;top: 300px;">Choose who grab your eyes</div>
+        <svg id="svg" width="1500" height="1100"></svg>
+    </div>
+    <div>
+        <div style="width: 100%; text-align: center; color: #FFF;font-size: 60px;margin-top: 200px;">Choose who you want to beat</div>
+        <div><canvas id="canvas" width="1500" height="500"></canvas></div>
+    </div>
+
+    <div id="seledPlayer">
+        <div id="seledLeft" data-val="0"></div><div id="seledRight" data-val="1"></div>
+    </div>
+
+    <div id="imgLeft" class="profile">
+        <img id="img_L" src="">
+    </div>
+    <div id="imgRight" class="profile">
+        <img id="img_R" src="">
+    </div>
+    <div id="infoLeft" class="profile">
+        <h3 id="nameLeft"></h3>
+        <p id="weightLeft"></p>
+        <p id="schoolLeft"></p>
+        <p id="birthdateLeft"></p>
+        <p id="heightLeft"></p>
+        <p id="positionLeft"></p>
+        <p id="posterstatusLeft"></p>
+    </div>
+    <div id="infoRight" class="profile">
+        <h3 id="nameRight"></h3>
+        <p id="weightRight"></p>
+        <p id="schoolRight"></p>
+        <p id="birthdateRight"></p>
+        <p id="heightRight"></p>
+        <p id="positionRight"></p>
+        <p id="posterstatusRight"></p>
+    </div>
+
+    <div id="thremeR_p" style="position: absolute; width: 100%; top: 2300px; text-align: center; color: #FFF;font-size: 60px;">Rolling forward or Rolling back?</div>
+    <svg id="themeRiver"  width="1500" height="800" style="position: relative; top: 200px;"></svg>
+    <div style="width: 100%; text-align: center; color: #FFF;font-size: 60px;margin-top: 200px;margin-bottom: 80px">Find him</div>
+    <svg id="map"  width="1500" height="1000" style="position: relative; top: -200px"></svg>
+</div>
+<div id="plane">
+    <div id="teamHead"></div>
+    <div style="width: 1170px; height: 10px"></div>
+    <div id="playerSel"></div>
+</div>
+<div style="width: 100%; text-align: center; color: #FFF;font-size: 60px;margin-top: 200px;margin-bottom: 80px">Have you ever heard before?</div>
+<div id="wordCloud" style="width: 800px;height:500px; margin: 0 auto; background-color: #FFF"></div>
+<div id="currentPlayer" style="position: absolute; display: none;
+background-color: #FFF; padding: 10px;-webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;">
+    <p id="name"></p>
+    <img id="img" src="">
+</div>
+<div id="themeRN" style="position: absolute; display: none;
+background-color: #FFF; padding: 10px;-webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px;"></div>
+<script type="text/javascript" src="js/manifest.js"></script><script type="text/javascript" src="js/common.js"></script><script type="text/javascript" src="js/main.js"></script></body>
+</html>
