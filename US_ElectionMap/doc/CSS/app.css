@@ -1,0 +1,84 @@
+/* resets */
+
+body { margin: 0 }
+img { max-width: 100% }
+svg { max-height: 100% }
+
+
+/* main.js properties */
+.container { max-width: 665px; }
+
+
+.state text {
+  font-size: 12px;
+  text-anchor: middle;
+  stroke: none;
+}
+
+.state .votes {
+  font-size: 10px;
+  text-anchor: end;
+}
+
+#detail {
+  display: none;
+  height:10%;
+  width: 10%;
+  top: 50%;
+  left: 90%;
+  background: lightgrey;
+  position: absolute;
+}
+
+div.scale{
+    min-width: 800px;
+    text-align: center;
+  }
+  span{
+    display: inline-block;
+    width: 60px;
+    height: 8px;
+    position: relative;
+  }
+  span p{
+    position: absolute;
+    top: 5px;
+    font-size: 10px;
+    margin: 5px auto 0;
+  }
+  span.c1{
+    background-color: #003D7A;
+  }
+  span.c2{
+    background-color: #02509E;
+  }
+  span.c3{
+    background-color: #2E82BF;
+  }
+  span.c4{
+    background-color: #68ADD8;
+  }
+  span.c5{
+    background-color: #9CC9E2;
+  }
+  span.c6{
+    background-color: #C5DBF0;
+  }
+  span.c7{
+    background-color: #FEBB9E;
+  }
+  span.c8{
+    background-color: #FE926E;
+  }
+  span.c9{
+    background-color: #FE6943;
+  }
+  span.c10{
+    background-color: #E12B1B;
+  }
+  span.c11{
+    background-color: #A70A0A;
+  }
+  span.c12{
+    background-color: #890202;
+  }
